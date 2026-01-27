@@ -46,3 +46,10 @@ proptest! {
         prop_assert_eq!(value_type(&value), Type::Int);
     }
 }
+
+#[test]
+fn rejects_function_equality() {
+    let expr = parse_expr("let f = \\x: Int -> x in f == f").expect("parse");
+    let err = type_of(&expr).expect_err("type error");
+    assert_eq!(err.message, "equality is only defined for Int and Bool");
+}
