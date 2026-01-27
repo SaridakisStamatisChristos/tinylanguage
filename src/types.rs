@@ -92,12 +92,15 @@ fn type_of_with_env(expr: &Expr, env: &mut HashMap<String, Type>) -> Result<Type
                     Ok(Type::Int)
                 }
                 BinOp::Eq => {
-                    if lhs_ty != rhs_ty {
-                        return Err(TypeError {
+                    match (&lhs_ty, &rhs_ty) {
+                        (Type::Int, Type::Int) | (Type::Bool, Type::Bool) => Ok(Type::Bool),
+                        _ if lhs_ty != rhs_ty => Err(TypeError {
                             message: "equality expects matching types".to_string(),
-                        });
+                        }),
+                        _ => Err(TypeError {
+                            message: "equality is only defined for Int and Bool".to_string(),
+                        }),
                     }
-                    Ok(Type::Bool)
                 }
                 BinOp::Lt => {
                     if lhs_ty != Type::Int || rhs_ty != Type::Int {
