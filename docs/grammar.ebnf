@@ -1,0 +1,32 @@
+(* TinyLanguage Grammar (EBNF) *)
+
+program     = expression ;
+
+expression  = let_expr | if_expr | lambda | equality ;
+
+let_expr    = "let" ident "=" expression "in" expression ;
+if_expr     = "if" expression "then" expression "else" expression ;
+lambda      = "\\" ident ":" type "->" expression ;
+
+(* Precedence: equality < comparison < addition < multiplication < application < atom *)
+
+equality    = comparison { "==" comparison } ;
+comparison  = term { "<" term } ;
+term        = factor { ("+" | "-") factor } ;
+factor      = application { "*" application } ;
+application = atom { atom } ;
+
+atom        = int
+            | bool
+            | ident
+            | "(" expression ")" ;
+
+type        = base_type [ "->" type ] ;
+base_type   = "Int" | "Bool" | "(" type ")" ;
+
+int         = digit { digit } ;
+bool        = "true" | "false" ;
+ident       = letter { letter | digit | "_" } ;
+
+letter      = "a" .. "z" | "A" .. "Z" | "_" ;
+digit       = "0" .. "9" ;
